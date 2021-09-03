@@ -21,7 +21,7 @@ def create_database():
             sql_code = "CREATE DATABASE " + name +"_db"
             cursor.execute(sql_code)
         except psycopg2.Error:
-            print("Data base with this name arledy exist or wrong name.")
+            print("Data base with this name already exist or wrong name.")
             continue
 
         def create_table1():
@@ -39,7 +39,7 @@ def create_database():
             cursor = connection.cursor()
             sql_code2 = "CREATE TABLE users(id serial UNIQUE, username varchar(255), hashed_password varchar(80)) "
             cursor.execute(sql_code2)
-            return "Created users table..."
+            return "Created table users..."
         print(create_table1())
         def create_table2():
             """
