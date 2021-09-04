@@ -1,5 +1,5 @@
 # python3
-
+import datetime
 from clcrypto import hash_password
 
 
@@ -86,34 +86,37 @@ class User:
 
 
 class Message:
-    def __init__(self, from_id="", to_id="", text="", creation_data=None ):
+    def __init__(self, from_id="", to_id="", text=""):
         self._id = -1
         self.from_id = from_id
         self.to_id = to_id
         self.text = text
-        self.creation_data = creation_data
+        self._creation_data = None
 
     @property
     def id(self):
         return self._id
 
+    @property
+    def creation_data(self):
+        return self.creation_data
+
     def save_to_db(self, cursor):
-        if self._id == -1:
+        if self.id == -1:
             sql = """INSERT INTO messages(from_id ,
             to_id ,
-            text ,
-            creation_data)
-                            VALUES(%s, %s, %s, %s) RETURNING id"""
+            text )
+                            VALUES(%s, %s, %s) """
             values = ( self.from_id ,
             self.to_id ,
             self.text ,
-            self.creation_data
+
             )
             cursor.execute(sql, values)
-            self._id = cursor.fetchone()[0]  # or cursor.fetchone()['id']
+
             return True
         else:
-            sql = """UPDATE Messages SET ufrom_id=%s ,
+            sql = """UPDATE Messages SET from_id=%s ,
             to_id=%s ,
             text=%s ,
             creation_data=%s
@@ -121,7 +124,7 @@ class Message:
             values = (self.from_id ,
             self.to_id ,
             self.text ,
-            self.creation_data,
+            self._creation_data,
             self._id
                       )
             cursor.execute(sql, values)
@@ -129,15 +132,15 @@ class Message:
 
     @staticmethod
     def load_all_messages(cursor):
-        sql = "SELECT from_id, to_id, text, creation_data FROM messages WHERE id=%s"
-        users = []
+        sql = "SELECT from_id, to_id, text FROM messages"
+        message = []
         cursor.execute(sql)
         for row in cursor.fetchall():
-            from_id, to_id, text, creation_data = row
+            from_id, to_id, text = row
             loaded_message = Message()
             loaded_message.from_id = from_id
             loaded_message.to_id = to_id
             loaded_message.text = text
-            loaded_message.creation_data = creation_data
-            users.append(loaded_message)
-        return Message
+            loaded_message._creation_data = datetime.datetime.now()
+            message.append(loaded_message)
+        return message

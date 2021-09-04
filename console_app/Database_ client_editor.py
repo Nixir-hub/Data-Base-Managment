@@ -20,7 +20,7 @@ args = parser.parse_args()
 def list_users(item):
     """
     check database for users
-    :param cur: takes cursor parm
+    :param item: takes cursor parm
     :return:
     """
     users = User.load_all_users(item)
